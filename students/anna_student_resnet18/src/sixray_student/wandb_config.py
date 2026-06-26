@@ -1,5 +1,5 @@
 """
-W&B configuration and logging helpers for Anna's ResNet18 student detector.
+W&B configuration and logging helpers for ResNet18 student detector.
 
 This file is intentionally separated from config.py.
 
@@ -7,7 +7,7 @@ Important:
 - config.py contains only constants and paths.
 - this file contains W&B-specific logic.
 - importing this file should not immediately start a W&B run.
-- the W&B API key is read from Colab userdata under the name "WANDB_API_KEY".
+- the W&B API key is read from environment variable or Colab userdata.
 """
 
 import os
@@ -47,6 +47,7 @@ USE_WANDB = True
 # =========================
 
 WANDB_PROJECT = "sixray-kd"
+
 if ABLATION_NAME == "baseline":
     WANDB_RUN_NAME = "student-resnet18-yolo2-local-offsets"
 else:
@@ -60,7 +61,19 @@ WANDB_RUN_ID_PATH = CHECKPOINT_DIR / "student_resnet18_run_id.txt"
 
 
 def get_wandb_api_key():
+    """
+    Read the W&B API key.
 
+    Priority:
+    1. Environment variable WANDB_API_KEY.
+    2. Colab userdata secret named WANDB_API_KEY.
+    3. None.
+
+    Reason:
+    When training is launched with !python in Colab, google.colab.userdata
+    can fail because the script runs outside the notebook kernel context.
+    Therefore, the environment variable is checked first.
+    """
 
     env_key = os.environ.get(WANDB_API_KEY_SECRET_NAME)
 
@@ -76,10 +89,31 @@ def get_wandb_api_key():
             return key
 
     except Exception as error:
-        print(f"Could not read Colab userdata secret {WANDB_API_KEY_SECRET_NAME}: {error}")
+        print(
+            f"Could not read Colab userdata secret "
+            f"{WANDB_API_KEY_SECRET_NAME}: {error}"
+        )
 
     return None
-    
+
+
+def login_to_wandb():
+    """
+    Login to W&B.
+
+    If WANDB_API_KEY is available, use it.
+    Otherwise, fall back to wandb.login(), which may ask interactively.
+    """
+
+    import wandb
+
+    api_key = get_wandb_api_key()
+
+    if api_key:
+        wandb.login(key=api_key)
+    else:
+        wandb.login()
+
 
 def init_wandb():
     """
@@ -111,6 +145,10 @@ def init_wandb():
         id=wandb_run_id,
         resume="allow",
         config={
+            # Ablation
+            "ablation_name": ABLATION_NAME,
+            "ablation_description": ABLATION_DESCRIPTION,
+
             # Model
             "model": "ResNet18 one-stage detector student",
             "model_name": MODEL_NAME,
@@ -137,10 +175,6 @@ def init_wandb():
             "map_eval_max_batches": MAP_EVAL_MAX_BATCHES,
             "map_eval_confidence_threshold": MAP_EVAL_CONFIDENCE_THRESHOLD,
             "map_eval_nms_iou_threshold": MAP_EVAL_NMS_IOU_THRESHOLD,
-
-            # ablatiosn
-            "ablation_name": ABLATION_NAME,
-            "ablation_description": ABLATION_DESCRIPTION,
         },
     )
 
