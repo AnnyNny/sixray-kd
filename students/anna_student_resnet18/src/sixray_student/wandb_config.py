@@ -60,56 +60,26 @@ WANDB_RUN_ID_PATH = CHECKPOINT_DIR / "student_resnet18_run_id.txt"
 
 
 def get_wandb_api_key():
-    """
-    Read the W&B API key.
 
-    Priority:
-    1. Colab userdata secret named WANDB_API_KEY.
-    2. Environment variable WANDB_API_KEY.
-    3. None.
-
-    We import google.colab only inside this function because google.colab
-    does not exist in normal local VS Code Python environments.
-    """
-
-    try:
-        from google.colab import userdata
-
-        key = userdata.get(WANDB_API_KEY_SECRET_NAME)
-
-        if key:
-            return key
-
-    except ImportError:
-        pass
 
     env_key = os.environ.get(WANDB_API_KEY_SECRET_NAME)
 
     if env_key:
         return env_key
 
+    try:
+        from google.colab import userdata  # type: ignore[import-not-found]
+
+        key = userdata.get(WANDB_API_KEY_SECRET_NAME)
+
+        if key:
+            return key
+
+    except Exception as error:
+        print(f"Could not read Colab userdata secret {WANDB_API_KEY_SECRET_NAME}: {error}")
+
     return None
-
-
-def login_to_wandb():
-    """
-    Login to W&B.
-
-    In Colab, this uses:
-        userdata.get("WANDB_API_KEY")
-
-    If the key is not found, wandb.login() falls back to the normal interactive login.
-    """
-
-    import wandb
-
-    api_key = get_wandb_api_key()
-
-    if api_key:
-        wandb.login(key=api_key)
-    else:
-        wandb.login()
-
+    
 
 def init_wandb():
     """
