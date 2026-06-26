@@ -30,6 +30,8 @@ from sixray_student.config import (
     CHECKPOINT_DIR,
     MODEL_NAME,
     BBOX_ENCODING,
+    ABLATION_NAME,
+    ABLATION_DESCRIPTION,
 )
 
 
@@ -45,7 +47,10 @@ USE_WANDB = True
 # =========================
 
 WANDB_PROJECT = "sixray-kd"
-WANDB_RUN_NAME = "student-resnet18-yolo2-local-offsets"
+if ABLATION_NAME == "baseline":
+    WANDB_RUN_NAME = "student-resnet18-yolo2-local-offsets"
+else:
+    WANDB_RUN_NAME = f"student-resnet18-yolo2-local-offsets-{ABLATION_NAME}"
 
 WANDB_API_KEY_SECRET_NAME = "WANDB_API_KEY"
 
@@ -162,6 +167,10 @@ def init_wandb():
             "map_eval_max_batches": MAP_EVAL_MAX_BATCHES,
             "map_eval_confidence_threshold": MAP_EVAL_CONFIDENCE_THRESHOLD,
             "map_eval_nms_iou_threshold": MAP_EVAL_NMS_IOU_THRESHOLD,
+
+            # ablatiosn
+            "ablation_name": ABLATION_NAME,
+            "ablation_description": ABLATION_DESCRIPTION,
         },
     )
 

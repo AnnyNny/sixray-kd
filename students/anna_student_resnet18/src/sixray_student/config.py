@@ -16,7 +16,11 @@ Those things belong in scripts or utility modules.
 
 from pathlib import Path
 
-
+from sixray_student.ablation_config import (
+    ABLATION_NAME,
+    ABLATION_DESCRIPTION,
+    ABLATION_OVERRIDES,
+)
 # =========================
 # Reproducibility
 # =========================
@@ -132,13 +136,29 @@ BOX_LOSS_WEIGHT = 10.0
 MAX_OBJECTNESS_POS_WEIGHT = 50.0
 
 
+
+# =========================
+# Ablation overrides
+# =========================
+
+for key, value in ABLATION_OVERRIDES.items():
+    globals()[key] = value
+
+
+if ABLATION_NAME != "baseline":
+    MODEL_NAME = f"{MODEL_NAME}_{ABLATION_NAME}"
 # =========================
 # Checkpoints
 # =========================
 
-CHECKPOINT_DIR = Path(
+BASE_CHECKPOINT_DIR = Path(
     "/content/drive/MyDrive/DatasetAPAI/SIXray_Project/student_checkpoints_anna"
 )
+
+if ABLATION_NAME == "baseline":
+    CHECKPOINT_DIR = BASE_CHECKPOINT_DIR
+else:
+    CHECKPOINT_DIR = BASE_CHECKPOINT_DIR / "ablations" / ABLATION_NAME
 
 # Main checkpoint is selected by detection quality mAP@50.
 BEST_CHECKPOINT_METRIC = "map_50"

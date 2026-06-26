@@ -44,6 +44,8 @@ from sixray_student.config import (
     MAP_EVAL_MAX_DETECTIONS,
     SCHEDULER_T_MAX,
     SCHEDULER_ETA_MIN,
+    ABLATION_NAME,
+    ABLATION_DESCRIPTION,
 )
 
 from sixray_student.data import (
@@ -126,6 +128,7 @@ def build_scheduler(optimizer):
 
 
 def main():
+    
     set_seed(SEED)
 
     CHECKPOINT_DIR.mkdir(parents=True, exist_ok=True)
@@ -135,6 +138,8 @@ def main():
 
     print("Device:", device)
     print("Use AMP:", use_amp)
+    print("Ablation:", ABLATION_NAME)
+    print("Ablation description:", ABLATION_DESCRIPTION)
 
     print("\nBuilding datasets...")
     train_dataset, val_dataset, test_dataset = build_datasets()
@@ -348,3 +353,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
