@@ -34,6 +34,16 @@ ABLATIONS = {
             "RESUME_TRAINING": False,
         },
     },
+
+    "grid40_layer3": {
+        "description": "Ablation with higher resolution 40x40 detection grid using resnet layer3",
+        "overrides": {
+            "GRID_SIZE" : 40,
+            "NUM_BOXES" : 2,
+            "BACKBONE_OUTPUT_LAYER" : "layer3",
+            "RESUME_TRAINING" : False,
+        }
+    },
 }
 
 

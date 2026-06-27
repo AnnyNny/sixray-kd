@@ -78,6 +78,7 @@ GRID_SIZE = 20
 NUM_BOXES = 2
 HEAD_CHANNELS = 256
 PRETRAINED_BACKBONE = True
+BACKBONE_OUTPUT_LAYER = "layer4"
 
 # The model predicts:
 # - tx, ty as local offsets inside the assigned grid cell

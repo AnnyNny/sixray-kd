@@ -1,5 +1,5 @@
 """
-Smoke test for Anna's ResNet18 YOLO-style student detector.
+
 
 This script checks that the refactored modules work together without needing
 the real SIXray-D dataset.

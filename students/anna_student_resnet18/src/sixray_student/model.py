@@ -4,13 +4,6 @@ This module contains:
 - ResNet18 feature extractor
 - YOLO-style prediction head
 - parameter counting helpers
-
-It does not contain:
-- dataset loading
-- target encoding
-- losses
-- metrics
-- training loop
 """
 
 import torch
@@ -24,27 +17,16 @@ from sixray_student.config import (
     NUM_BOXES,
     HEAD_CHANNELS,
     PRETRAINED_BACKBONE,
+    BACKBONE_OUTPUT_LAYER,
 )
 
 
 class ImageNetNormalize(nn.Module):
-    """
-    Normalize images with ImageNet statistics.
-
-    Input images are expected to be float tensors in [0, 1]
-    with shape:
-
-        [B, 3, H, W]
-
-    This is needed because the ResNet18 backbone is pretrained on ImageNet.
-    """
-
+  
     def __init__(self):
         super().__init__()
-
         mean = torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1)
         std = torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1)
-
         self.register_buffer("mean", mean)
         self.register_buffer("std", std)
 
@@ -83,6 +65,11 @@ class ResNet18Backbone(nn.Module):
         self.layer3 = resnet.layer3
         self.layer4 = resnet.layer4
 
+        if self.output_layer == "layer3":
+            self.out_channels = 256
+        else:
+            self.out_channels = 512
+
     def forward(self, x):
         x = self.conv1(x)
         x = self.bn1(x)
@@ -92,7 +79,9 @@ class ResNet18Backbone(nn.Module):
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
-        x = self.layer4(x)
+        if BACKBONE_OUTPUT_LAYER == "layer3":
+            return x # [B,256,40,40]
+        x = self.layer4(x) # [B, 512,20,20]
 
         return x
 
@@ -132,12 +121,16 @@ class ResNet18YOLOStudent(nn.Module):
         self.values_per_box = 1 + 4 + self.num_classes
 
         self.normalizer = ImageNetNormalize()
-        self.backbone = ResNet18Backbone(pretrained=pretrained_backbone)
+        self.backbone = ResNet18Backbone(
+            pretrained=pretrained_backbone,
+            output_layer=BACKBONE_OUTPUT_LAYER,
+        )
 
+        backbone_channels = self.backbone.out_channels
         out_channels = self.num_boxes * self.values_per_box
 
         self.head = nn.Sequential(
-            nn.Conv2d(512, head_channels, kernel_size=3, padding=1),
+            nn.Conv2d(backbone_channels, head_channels, kernel_size=3, padding=1),
             nn.BatchNorm2d(head_channels),
             nn.ReLU(inplace=True),
             nn.Conv2d(head_channels, head_channels, kernel_size=3, padding=1),

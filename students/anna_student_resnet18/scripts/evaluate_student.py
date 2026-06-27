@@ -1,5 +1,5 @@
 """
-Evaluate Anna's ResNet18 YOLO-style student detector.
+Evaluate ResNet18 student detector.
 
 Run from repository root:
 
@@ -58,13 +58,6 @@ from sixray_student.train_utils import (
 def load_model_from_checkpoint(model, checkpoint_path, device):
     """
     Load model weights from a training checkpoint.
-
-    Expected checkpoint format:
-        {
-            "model_state_dict": ...
-        }
-
-    This also accepts a raw state_dict as fallback.
     """
 
     checkpoint_path = Path(checkpoint_path)
