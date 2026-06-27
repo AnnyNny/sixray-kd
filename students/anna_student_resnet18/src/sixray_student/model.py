@@ -113,6 +113,7 @@ class ResNet18YOLOStudent(nn.Module):
         num_classes=NUM_CLASSES,
         num_boxes=NUM_BOXES,
         pretrained_backbone=PRETRAINED_BACKBONE,
+        output_layer=BACKBONE_OUTPUT_LAYER
     ):
         super().__init__()
 
