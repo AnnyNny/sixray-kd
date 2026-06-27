@@ -41,7 +41,7 @@ ABLATIONS = {
             "GRID_SIZE" : 40,
             "NUM_BOXES" : 2,
             "BACKBONE_OUTPUT_LAYER" : "layer3",
-            "RESUME_TRAINING" : False,
+            "RESUME_TRAINING" : True,
         }
     },
 }
