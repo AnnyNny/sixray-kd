@@ -49,9 +49,9 @@ class ResNet18Backbone(nn.Module):
     This matches GRID_SIZE = 20.
     """
 
-    def __init__(self, pretrained=True):
+    def __init__(self, pretrained=True, output_layer="layer4"):
         super().__init__()
-
+        self.output_layer = output_layer
         weights = ResNet18_Weights.DEFAULT if pretrained else None
         resnet = resnet18(weights=weights)
 
