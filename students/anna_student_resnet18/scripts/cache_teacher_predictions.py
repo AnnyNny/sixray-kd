@@ -27,7 +27,7 @@ from sixray_student.config import (
 
 MODEL_NAME = "PekingU/rtdetr_v2_r50vd"
 TEACHER_MODEL_DIR = Path(
-    "/content/drive/MyDrive/DatasetAPAI/SIXray_Project/kaggle_checkpoint_rtdetr_best/01_rtdetr_teacher_baseline_angelo_best"
+    "/content/drive/MyDrive/DatasetAPAI/SIXray_Project/kaggle_checkpoint_rtdetr_best"
 )
 TEACHER_CONF_THRESHOLD = 0.30
 
