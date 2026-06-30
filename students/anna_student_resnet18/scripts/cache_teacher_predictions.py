@@ -26,7 +26,9 @@ from sixray_student.config import (
 )
 
 MODEL_NAME = "PekingU/rtdetr_v2_r50vd"
-
+TEACHER_MODEL_DIR = Path(
+    "/content/drive/MyDrive/DatasetAPAI/SIXray_Project/kaggle_checkpoint_rtdetr_best/01_rtdetr_teacher_baseline_angelo_best"
+)
 TEACHER_CONF_THRESHOLD = 0.30
 
 CACHE_DIR = Path("/content/drive/MyDrive/DatasetAPAI/SIXray_Project/teacher_cache")
@@ -60,9 +62,9 @@ def build_teacher(device):
     id2label = {i: name for i, name in enumerate(CLASS_NAMES)}
     label2id = {name: i for i, name in id2label.items()}
 
-    processor = AutoImageProcessor.from_pretrained(MODEL_NAME)
+    processor = AutoImageProcessor.from_pretrained(TEACHER_MODEL_DIR)
     model = AutoModelForObjectDetection.from_pretrained(
-        MODEL_NAME,
+        TEACHER_MODEL_DIR,
         id2label=id2label,
         label2id=label2id,
     )
