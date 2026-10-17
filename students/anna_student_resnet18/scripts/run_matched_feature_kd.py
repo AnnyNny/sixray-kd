@@ -77,8 +77,7 @@ def train_student(name, use_kd, config, initial_weights, teacher, train_data, va
     )
 
     optimizer = torch.optim.AdamW(parameters, lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
-    # ORIGINAL schedule retained. Verify whether train_one_epoch() calls
-    # scheduler.step() per optimizer update or per epoch before changing T_max.
+    
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer, T_max=EPOCHS, eta_min=MIN_LEARNING_RATE,
     )
